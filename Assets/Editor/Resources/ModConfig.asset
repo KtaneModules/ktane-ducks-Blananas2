@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
+  m_Name: ModConfig
+  m_EditorClassIdentifier: 
+  id: ducks
+  title: Ducks
+  author: Blananas2
+  description: 'A group of rubber ducks is, of course, referred to as a rubber band.
+
+
+    Module by Blananas2
+
+    Modeling by Crazycaleb
+
+
+    Module ID: ducks
+
+    The manual can be found here: https://ktane.timwi.de/HTML/Ducks.html'
+  version: 
+  outputFolder: build
+  previewImage: {fileID: 2800000, guid: 1f79fc52fb995b140949af73d65cad67, type: 3}
