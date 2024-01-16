@@ -1,2 +1,19 @@
-Replace this with a JSON generated at ktane.timwi.de (see Tools -> Create new module)
-Don't forget to add Tags to the description that describe what your module LOOKS LIKE to be able to find it in the list from the defuser's description.
+{
+  "Compatibility": "Compatible",
+  "Contributors": {
+    "Developer": [ "Blananas2" ],
+    "Modeling": [ "Crazycaleb" ]
+  },
+  "DefuserDifficulty": "Easy",
+  "Description": "Navigate a room without crashing into the edge by identifying and squeezing differently colored rubber ducks. Tags: 4-colors, blue, red, green, yellow",
+  "ExpertDifficulty": "Medium",
+  "ModuleID": "ducks",
+  "Name": "Ducks",
+  "Origin": "Mods",
+  "Published": "2024-01-16",
+  "SortKey": "DUCKS",
+  "SourceUrl": "https://github.com/Blananas2/ktane-ducks",
+  "SteamID": "3140799354",
+  "Symbol": "Dks",
+  "Type": "Regular"
+}
