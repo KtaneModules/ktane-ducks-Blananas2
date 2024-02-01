@@ -138,4 +138,73 @@ public class ducksScript : MonoBehaviour {
             yield return new WaitForSeconds(0.025f);
         }
     }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"[!{0} press URDL] to press the duck Up, Right, Down, then Left."; //Duck KMSelectables are in this order
+#pragma warning restore 414
+
+    private IEnumerator ProcessTwitchCommand(string command)
+    {
+        command = command.Trim();
+        if (Regex.IsMatch(command, @"^press\s+[UDLR]+$", RegexOptions.IgnoreCase))
+        {
+            yield return null;
+            int[] directions = command.Split(' ').Where(s => !string.IsNullOrEmpty(s)).Last().ToUpper().ToCharArray().Select(dir =>
+            {
+                switch (dir)
+                {
+                    case 'U': return 0;
+                    case 'R': return 1;
+                    case 'D': return 2;
+                    case 'L': return 3;
+                    default: throw new ArgumentException("Not a direction.");
+                }
+            }).ToArray();
+            foreach (int direction in directions)
+            {
+                yield return PressDuckie(Ducks[direction]);
+                yield return new WaitForSecondsRealtime(.25f);
+            }
+        }
+    }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        while (!ModuleSolved)
+        {
+            int y = Position / 5, x = Position % 5;
+            if (x < 2)
+            {
+                yield return PressDuckie(Ducks[ActualModulo(1 - Orientation, 4)]);
+                yield return new WaitForSecondsRealtime(.25f);
+            }
+            else if (x > 2)
+            {
+                yield return PressDuckie(Ducks[ActualModulo(3 - Orientation, 4)]);
+                yield return new WaitForSecondsRealtime(.25f);
+            }
+            if (y < 2)
+            {
+                yield return PressDuckie(Ducks[ActualModulo(2 - Orientation, 4)]);
+                yield return new WaitForSecondsRealtime(.25f);
+            }
+            else if (y > 2)
+            {
+                yield return PressDuckie(Ducks[ActualModulo(4 - Orientation, 4)]);
+                yield return new WaitForSecondsRealtime(.25f);
+            }
+        }
+    }
+
+    private IEnumerator PressDuckie(KMSelectable duckie)
+    {
+        duckie.OnInteract();
+        yield return new WaitForSecondsRealtime(.1f);
+        duckie.OnInteractEnded();
+    }
+
+    private int ActualModulo(int n, int m)
+    {
+        return (n % m + m) % m;
+    }
 }
