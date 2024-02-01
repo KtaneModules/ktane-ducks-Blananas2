@@ -7,7 +7,8 @@ using UnityEngine;
 using KModkit;
 using Rnd = UnityEngine.Random;
 
-public class ducksScript : MonoBehaviour {
+public class ducksScript : MonoBehaviour
+{
 
     public KMBombInfo Bomb;
     public KMAudio Audio;
@@ -37,44 +38,54 @@ public class ducksScript : MonoBehaviour {
     int ModuleID;
     private bool ModuleSolved;
 
-    void Awake () {
+    void Awake()
+    {
         ModuleID = ModuleIDCounter++;
 
-        foreach (KMSelectable Duck in Ducks) {
+        foreach (KMSelectable Duck in Ducks)
+        {
             Duck.OnInteract += delegate () { DuckPress(Duck); return false; };
             Duck.OnInteractEnded += delegate () { DuckRelease(); };
         }
     }
 
     // Use this for initialization
-    void Start () {
-        do { Position = Rnd.Range(0, 25); } 
-            while (Position == 12);
+    void Start()
+    {
+        do { Position = Rnd.Range(0, 25); }
+        while (Position == 12);
         Orientation = Rnd.Range(0, 4);
 
         Debug.LogFormat("[Ducks #{0}] You are at {1} with {2} at the top.", ModuleID, Coord(Position), DirectionNames[Orientation]);
         Color();
 
-        for (int S = 0; S < 4; S++) {
+        for (int S = 0; S < 4; S++)
+        {
             do { Squeaks[S] = Rnd.Range(0, 10); }
-                while ( Squeaks[S] == Squeaks[(S + 1) % 4] || Squeaks[S] == Squeaks[(S + 2) % 4] || Squeaks[S] == Squeaks[(S + 3) % 4]);
+            while (Squeaks[S] == Squeaks[(S + 1) % 4] || Squeaks[S] == Squeaks[(S + 2) % 4] || Squeaks[S] == Squeaks[(S + 3) % 4]);
         }
     }
 
-    void Color () {
-        for (int J = 0; J < 4; J++) {
+    void Color()
+    {
+        for (int J = 0; J < 4; J++)
+        {
             DuckObjs[J].GetComponent<MeshRenderer>().material = DuckMats[Room[Position][(J + Orientation) % 4]];
         }
     }
 
-    string Coord (int p) {
+    string Coord(int p)
+    {
         string alpha = "ABCDE";
-        return alpha[p%5] + ((p/5)+1).ToString();
+        return alpha[p % 5] + ((p / 5) + 1).ToString();
     }
 
-    void DuckPress(KMSelectable Duck) {
-        for (int D = 0; D < 4; D++) {
-            if (Duck == Ducks[D]) {
+    void DuckPress(KMSelectable Duck)
+    {
+        for (int D = 0; D < 4; D++)
+        {
+            if (Duck == Ducks[D])
+            {
                 Pressed = D;
 
                 Audio.PlaySoundAtTransform("squeak-a" + Squeaks[D], transform);
@@ -82,60 +93,139 @@ public class ducksScript : MonoBehaviour {
                 if (ModuleSolved) { return; }
 
                 int Direction = (D + Orientation) % 4;
-                switch (Direction) {
-                    case 0: 
+                switch (Direction)
+                {
+                    case 0:
                         if (Position / 5 == 0) { ValidMovement = false; }
                         else { Position -= 5; }
-                    break;
-                    case 1: 
-                        if (Position % 5 == 4) { ValidMovement = false; } 
+                        break;
+                    case 1:
+                        if (Position % 5 == 4) { ValidMovement = false; }
                         else { Position += 1; }
-                    break;
-                    case 2: 
-                        if (Position / 5 == 4) { ValidMovement = false; } 
+                        break;
+                    case 2:
+                        if (Position / 5 == 4) { ValidMovement = false; }
                         else { Position += 5; }
-                    break;
-                    case 3: 
-                        if (Position % 5 == 0) { ValidMovement = false; } 
+                        break;
+                    case 3:
+                        if (Position % 5 == 0) { ValidMovement = false; }
                         else { Position -= 1; }
-                    break;
+                        break;
                 }
                 Debug.LogFormat("[Ducks #{0}] Squeezed {1}{2}.", ModuleID, DirectionNames[D], ValidMovement ? (", you're now at " + Coord(Position)) : "");
             }
         }
     }
 
-    void DuckRelease() {
+    void DuckRelease()
+    {
         Audio.PlaySoundAtTransform("squeak-b" + Squeaks[Pressed], transform);
         DuckObjs[Pressed].transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
         if (ModuleSolved) { return; }
 
-        if (!ValidMovement) {
+        if (!ValidMovement)
+        {
             Debug.LogFormat("[Ducks #{0}] You hit a wall, strike!", ModuleID);
             GetComponent<KMBombModule>().HandleStrike();
             ValidMovement = true;
-        } else if (Position == 12) {
+        }
+        else if (Position == 12)
+        {
             Debug.LogFormat("[Ducks #{0}] You made it to the pool, module solved.", ModuleID);
             GetComponent<KMBombModule>().HandlePass();
             ModuleSolved = true;
             PoolObj.SetActive(true);
-            for (int d = 0; d < 4; d++) {
+            for (int d = 0; d < 4; d++)
+            {
                 DuckObjs[d].SetActive(false);
             }
             StartCoroutine(WalterWhite());
-        } else {
+        }
+        else
+        {
             Color();
         }
     }
 
-    IEnumerator WalterWhite() {
+    IEnumerator WalterWhite()
+    {
         float WaltX = Rnd.Range(0, 589) * 0.0017f;
         float WaltY = Rnd.Range(0, 589) * 0.0017f;
-        while (true) {
+        while (true)
+        {
             WaltX += 0.001f;
             WaltY += 0.001f;
             Walter.material.mainTextureOffset = new Vector2(WaltX, WaltY);
             yield return new WaitForSeconds(0.025f);
         }
+    }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"[!{0} press URDL] to press the duck Up, Right, Down, then Left."; //Duck KMSelectables are in this order
+#pragma warning restore 414
+
+    private IEnumerator ProcessTwitchCommand(string command)
+    {
+        command = command.Trim();
+        if (Regex.IsMatch(command, @"^press\s+[UDLR]+$", RegexOptions.IgnoreCase))
+        {
+            yield return null;
+            int[] directions = command.Split(' ').Where(s => !string.IsNullOrEmpty(s)).Last().ToUpper().ToCharArray().Select(dir =>
+            {
+                switch (dir)
+                {
+                    case 'U': return 0;
+                    case 'R': return 1;
+                    case 'D': return 2;
+                    case 'L': return 3;
+                    default: throw new ArgumentException("Not a direction.");
+                }
+            }).ToArray();
+            foreach (int direction in directions)
+            {
+                yield return PressDuckie(Ducks[direction]);
+                yield return new WaitForSecondsRealtime(.25f);
+            }
+        }
+    }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        while (!ModuleSolved)
+        {
+            int y = Position / 5, x = Position % 5;
+            if (x < 2)
+            {
+                    yield return PressDuckie(Ducks[ActualModulo(1 - Orientation,4)]);
+                    yield return new WaitForSecondsRealtime(.25f);
+            }
+            else if (x > 2)
+            {
+                    yield return PressDuckie(Ducks[ActualModulo(3 - Orientation,4)]);
+                    yield return new WaitForSecondsRealtime(.25f);
+            }
+            if (y < 2)
+            {
+                    yield return PressDuckie(Ducks[ActualModulo(2 - Orientation,4)]);
+                    yield return new WaitForSecondsRealtime(.25f);
+            }
+            else if (y > 2)
+            {
+                    yield return PressDuckie(Ducks[ActualModulo(4 - Orientation,4)]);
+                    yield return new WaitForSecondsRealtime(.25f);
+            }
+        }
+    }
+
+    private IEnumerator PressDuckie(KMSelectable duckie)
+    {
+        duckie.OnInteract();
+        yield return new WaitForSecondsRealtime(.1f);
+        duckie.OnInteractEnded();
+    }
+
+    private int ActualModulo(int n, int m)
+    {
+        return (n % m + m) % m;
     }
 }
