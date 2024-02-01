@@ -140,7 +140,7 @@ public class ducksScript : MonoBehaviour {
     }
 
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"[!{0} press URDL] to press the duck Up, Right, Down, then Left."; //Duck KMSelectables are in this order
+    private readonly string TwitchHelpMessage = @"!{0} press URDL [Press the duck Up, Right, Down, then Left]"; //Duck KMSelectables are in this order
 #pragma warning restore 414
 
     private IEnumerator ProcessTwitchCommand(string command)
